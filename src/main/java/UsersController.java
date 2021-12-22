@@ -7,6 +7,18 @@ import java.util.ArrayList;
 public class UsersController {
    public static ArrayList<User> usersList = new ArrayList<>();
 
+   public static String slt;
+
+   static {
+      try {
+         slt = getSalt();
+      } catch (NoSuchAlgorithmException e) {
+         e.printStackTrace();
+      } catch (NoSuchProviderException e) {
+         e.printStackTrace();
+      }
+   }
+
    public static User findByName(String email){
       for(User u : usersList){
          if(u.getEmail().equals(email))
@@ -15,16 +27,13 @@ public class UsersController {
       return null;
    }
 
-   public static void addUser (String email, String password) throws NoSuchAlgorithmException, NoSuchProviderException {
-      String slt = getSalt();
+   public static void addUser (String email, String password) {
       String hshPswrd = getSecurePassword(password, slt);
       usersList.add(new User(email, hshPswrd));
    }
 
-   public static boolean register (String email, String password) throws NoSuchAlgorithmException, NoSuchProviderException {
-      String slt = getSalt();
+   public static boolean register (String email, String password) {
       String hshPswrd = getSecurePassword(password, slt);
-
       User user = new User(email, hshPswrd);
 
       for(User u : UsersController.usersList){
@@ -39,20 +48,17 @@ public class UsersController {
       return true;
    }
 
-   public static int login(String email, String password) throws NoSuchAlgorithmException, NoSuchProviderException {
+   public static int login(String email, String password){
       User user = UsersController.findByName(email);
       if( user == null)
          return -1;
       else{
-         String slt = getSalt();
          String hshPswrd = getSecurePassword(password, slt);
-         //String storedPswrd = getSecurePassword(user.getPassword(), slt);
          if(hshPswrd.equals(user.getPassword()))
             return 1;
          else return -2;
       }
    }
-
 
    public static MessageDigest md;
    static {
